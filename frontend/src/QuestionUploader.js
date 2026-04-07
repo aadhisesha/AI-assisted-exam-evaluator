@@ -302,15 +302,6 @@ export default function QuestionUploader({ onSetExtractedText }) {
       method: 'AI creative evaluation with rubric-aware prompt and feedback calibration',
       calibrationApplied: calibration.applied,
       feedbackSamplesUsed: calibration.samplesUsed,
-      similarityBreakdown: {
-        cosineSimilarity: 0,
-        characterSimilarity: 0,
-        jaccardSimilarity: 0,
-        keywordCoverage: 0,
-        sentenceCoverage: 0,
-        lengthAdequacy: 0,
-        feedbackSimilarity: calibration.feedbackSimilarity,
-      },
     };
   };
 
@@ -570,7 +561,7 @@ export default function QuestionUploader({ onSetExtractedText }) {
                   <strong>Justification:</strong>
                   <div className="detail-box">{evaluation.justification || '—'}</div>
                 </div>
-                {evaluation.similarityBreakdown && (
+                {question.questionType === 'subjective' && evaluation.similarityBreakdown && (
                   <div className="info-line">
                     <strong>Similarity Breakdown:</strong>
                     <ul className="metric-list">

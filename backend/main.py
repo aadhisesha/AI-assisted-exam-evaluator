@@ -2,6 +2,188 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import base64
+# Project overview you can present to staff:
+
+# This is an AI-assisted exam evaluation system with a React frontend and a FastAPI backend. It supports two grading paths:
+
+# Subjective answer evaluation using NLP similarity metrics.
+# Creative answer evaluation using an LLM prompt + rubric scoring.
+# It also includes a feedback loop where teacher-corrected marks are saved and used to calibrate future scores.
+# Core files to know:
+
+# main.py
+# App.js
+# QuestionContext.js
+# QuestionDashboard.js
+# QuestionUploader.js
+# config.js
+# Important note for your presentation:
+# The README says this is only about OCR + preprocessing and “no ML-based evaluation yet”, but the current codebase already includes a full subjective ML evaluator and feedback calibration. So present code behavior, not README status.
+
+# What Problem It Solves
+# Teachers need faster first-pass grading for descriptive answers. This system:
+
+# Lets staff define questions and answer keys.
+# Extracts text from uploaded student answer images.
+# Scores answers automatically.
+# Lets staff correct marks.
+# Learns from those corrections to improve later scoring.
+# Architecture
+
+# Frontend: React app for question setup, file upload, evaluation view, and teacher correction.
+# Backend: FastAPI service for OCR payload handling, preprocessing, evaluation, question storage, and feedback storage.
+# Database: MongoDB with three collections:
+# questions
+# evaluations
+# feedback
+# Tech Stack
+
+# Backend dependencies in requirements.txt:
+# FastAPI, Uvicorn
+# NLTK
+# Scikit-learn, NumPy
+# PyMongo
+# Frontend dependencies in package.json:
+# React 18
+# React scripts
+# Frontend Flow
+# From App.js:
+
+# Two tabs: OCR view and Question Management Dashboard.
+# Loads Puter client script in browser for OCR/chat usage.
+# If text comes from question workflow, it calls backend preprocess endpoint.
+# From QuestionDashboard.js:
+
+# Staff can create/edit questions.
+# Two question types:
+# subjective: uses answer key and max marks
+# creative: uses rubric criteria and marks
+# Questions are saved to backend via context layer.
+# From QuestionUploader.js:
+
+# Select a question.
+# Upload one or more images.
+# Extract text for each image.
+# Combine extracted text and evaluate based on question type.
+# Show marks, confidence, similarity breakdown, matched/missing keywords, strengths/improvements.
+# Teacher can correct mark and save feedback for future calibration.
+# From QuestionContext.js:
+
+# Central state for questions.
+# Syncs with backend on load/save/delete.
+# From config.js:
+
+# API base auto-resolves using browser hostname + default port 8000.
+# Supports custom REACT_APP_API_BASE.
+# Backend Endpoints and Responsibilities
+# All in main.py:
+
+# POST /ocr
+# Accepts uploaded file.
+# Returns data URL (base64 with mime).
+# Frontend then sends this to Puter chat model to extract text.
+# POST /preprocess
+# Cleans text: lowercase, remove punctuation, normalize spaces, remove stopwords.
+# POST /evaluate-subjective
+# Main ML scoring for subjective answers.
+# Uses hybrid metrics + optional feedback calibration.
+# POST /feedback-calibration
+# Returns adjusted percentage based on similar historical feedback.
+# GET /questions
+# Returns all questions + latest evaluation per question.
+# POST /questions
+# Upserts question by questionNumber.
+# DELETE /questions/{question_number}
+# Deletes question and its evaluations.
+# POST /evaluations
+# Persists evaluation records with timestamp.
+# POST /feedback
+# Persists teacher corrections (previous vs corrected marks, extracted text, etc).
+# Subjective Evaluation Logic (Key Part to Explain)
+# In main.py, subjective scoring is not one metric; it is a weighted hybrid:
+
+# TF-IDF cosine similarity (word/phrase semantic overlap).
+# Character n-gram cosine similarity (spelling/phrase robustness).
+# Jaccard token similarity (set overlap).
+# Keyword coverage (top answer-key concepts matched by student answer).
+# Sentence coverage (answer-key sentence alignment against student sentences).
+# Length adequacy (penalizes very short answers).
+# Weighted raw percentage:
+
+# 24% TF-IDF cosine
+# 22% character cosine
+# 14% Jaccard
+# 22% keyword coverage
+# 12% sentence coverage
+# 6% length adequacy
+# Then final marks:
+# marks = adjusted_percentage × max_marks
+
+# Confidence score:
+# Average of metric values minus a small penalty for high variance, so unstable metric patterns reduce confidence.
+
+# Feedback Calibration (Learning Loop)
+# Also in main.py:
+
+# System fetches historical feedback records for same question (or same type if question not specified).
+# Keeps records with corrected marks + extracted text.
+# Computes similarity of current answer vs past corrected answers.
+# Uses similar records (threshold > 0.12) as weighted samples.
+# Blends base ML score with learned score from teacher history.
+# Blend weight is bounded to avoid overfitting single feedback sample.
+# This is the most important “continuous improvement” feature for staff discussion.
+
+# Creative Evaluation Path
+# In QuestionUploader.js:
+
+# For creative questions, frontend prompts LLM with question + rubric + student answer.
+# Expects strict JSON marks/justification/strengths/improvements.
+# Applies feedback calibration endpoint to adjust LLM base score.
+# Saves final result to backend.
+# So subjective grading is backend ML-heavy; creative grading is LLM-prompt-heavy with calibration.
+
+# Data Model (Practical View)
+
+# questions:
+# questionNumber, questionType, questionText
+# answerKey, maxMarks, rubrics
+# ocrText, uploads, fileExtractedTextMap
+# lastEvaluation (from latest saved evaluation)
+# evaluations:
+# questionNumber, timestamp
+# evaluation payload (marks, breakdown, confidence, etc)
+# feedback:
+# questionNumber, questionType, timestamp
+# previousMarks, correctedMarks, maxMarks, extractedText, justification
+# End-to-End Demo Script for Staff
+
+# Create a subjective question in dashboard with answer key and max marks.
+# Upload student answer image for that question.
+# Click evaluate and show:
+# marks
+# similarity breakdown
+# matched and missing keywords
+# confidence
+# Manually correct the mark and save corrected mark.
+# Re-evaluate similar answer to show calibration effect.
+# Create a creative question with rubrics and show rubric-based AI evaluation output.
+# Strengths You Can Highlight
+
+# Hybrid scoring is more robust than single cosine metric.
+# Transparent scoring via metric breakdown.
+# Human-in-the-loop correction and learning.
+# Question-type-aware evaluation.
+# Persistent storage for audit and analytics.
+# Current Gaps / Risks
+
+# OCR extraction currently depends on browser-side Puter flow; backend /ocr returns base64 data URL, not final text extraction.
+# Creative evaluation relies on prompt consistency and model JSON compliance.
+# No authentication/role control yet.
+# No strict schema validation for some dict payload endpoints.
+# Default CORS is wide open (development-friendly, production-risky).
+# If useful, I can also prepare a 5-minute speaking version and a 1-slide architecture summary you can read directly in your staff meeting.
+
+# GPT-5.3-Codex • 0.9x
 import os
 import re
 import time
