@@ -1,5 +1,3 @@
----
-
 ## 🎯 Project Overview & Problem Statement
 
 ### The Challenge
