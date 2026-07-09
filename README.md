@@ -1,16 +1,10 @@
-# 📝 AI-Assisted Exam Evaluator
+#  AI-Assisted Exam Evaluator
 
 > An AI-powered web application that automates subjective answer evaluation using OCR, Machine Learning, and NLP, while continuously improving grading accuracy through faculty feedback.
 
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![React](https://img.shields.io/badge/React-18-61DAFB)
-![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 ---
 
-# 📖 Overview
+#  Overview
 
 Manual evaluation of descriptive answer sheets is time-consuming, inconsistent, and prone to human error. This project automates the evaluation process by combining Optical Character Recognition (OCR), Natural Language Processing (NLP), and Machine Learning techniques to generate marks and feedback for subjective answers.
 
@@ -18,13 +12,13 @@ The system supports both **English and Tamil** answer sheets, allows faculty to 
 
 ---
 
-## 🎓 Academic Project
+##  Academic Project
 
 This project was developed as part of the **Creative and Innovative Project** course at the **College of Engineering Guindy (Anna University)**. It aims to demonstrate the application of Artificial Intelligence, Machine Learning, Optical Character Recognition (OCR), and Natural Language Processing (NLP) to automate the evaluation of subjective answer sheets.
 
 ---
 
-# ✨ Features
+#  Features
 
 - 📄 Upload answer sheets (PDF/Image)
 - 🔍 OCR extraction for English and Tamil answers
