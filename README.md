@@ -1,6 +1,6 @@
 #  AI-Assisted Exam Evaluator
 
-> An AI-powered web application that automates subjective answer evaluation using OCR, Machine Learning, and NLP, while continuously improving grading accuracy through faculty feedback.
+An AI-powered web application that automates subjective answer evaluation using OCR, Machine Learning, and NLP, while continuously improving grading accuracy through faculty feedback.
 
 ---
 
@@ -242,7 +242,7 @@ These metrics are combined to generate accurate marks and meaningful feedback.
 ---
 
 
-# 👨‍💻 Project Team
+# Project Team
 
 This project was developed as part of the **Creative and Innovative Project** course by:
 
